@@ -1,0 +1,44 @@
+from django.http import HttpResponse, Http404
+from django.template import loader
+from django.shortcuts import render, get_object_or_404
+
+from .models import Question
+
+
+# 템플릿 사용 예시 1, 단축 기능 사용 X
+# def index(request):
+#     latest_question_list = Question.objects.order_by('-pub_date')[:5]
+#     template = loader.get_template('polls/index.html')
+#     context = {
+#         'latest_question_list': latest_question_list,
+#     }
+#     return HttpResponse(template.render(context, request))
+
+# 템플릿 사용 예시 2, 단축 기능 사용 O
+def index(request):
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    context = {'latest_question_list': latest_question_list}
+    return render(request, 'polls/index.html', context)
+
+
+# try/except 사용으로 404 페이지 출력 예
+# def detail(request, question_id):
+#     try:
+#         question = Question.objects.get(pk=question_id)
+#     except Question.DoesNotExist:
+#         raise Http404("Question does not exist")
+#     return render(request, 'polls/detail.html', {'question': question})
+
+# get_object_or_404() 사용 예
+def detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/detail.html', {'question': question})
+
+
+def results(request, question_id):
+    response = "You're looking at the result of question %s."
+    return HttpResponse(response % question_id)
+
+
+def vote(request, question_id):
+    return HttpResponse("You're voting on question %s." % question_id)
